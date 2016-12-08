@@ -9,6 +9,7 @@
             var items = [];
             $.each(data.results, function (key, val) {
                 items.push("<img id='" + key + "'" + "src=' http://image.tmdb.org/t/p/w185//" + val.poster_path + "'>");
+                items.push("<a href='http://localhost:8888/movie/" + val.title + "'>" + val.title + "</a>");
             });
 
             $("<ul/>", {

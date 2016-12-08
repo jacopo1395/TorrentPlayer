@@ -1,0 +1,14 @@
+//Created by Jacopo on 08/12/2016.
+
+doctype html
+html
+    head
+        title my jade template
+        script(type='text/javascript')
+
+    body
+        each movie, i in data
+
+            title #{movie.name}
+            size #{movie.size}
+            a(href='http://localhost:8888/link/' + encodeURI(movie.link)) #{movie.name}

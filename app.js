@@ -1,10 +1,11 @@
-//required
+//require
 var fs = require('fs');
 var path = require('path');
 var express = require('express');
-var WebTorrent = require('webtorrent');
 var request = require('request');
 var cheerio = require('cheerio');
+var WebTorrent = require('webtorrent');
+var icn = require('./lib/ilcorsaronero');
 _ = require('lodash');
 
 //models
@@ -13,6 +14,7 @@ var Movie = require("./models/movie.js");
 //views
 var player = fs.readFileSync('./views/player.html', "utf8");
 var index = fs.readFileSync('./views/index.html', "utf8");
+var movie = fs.readFileSync('./views/movie.html', "utf8");
 
 //variables
 var api_key = '89b43c0850f63d51b9a2fde38e6db2f6';
@@ -23,25 +25,57 @@ var magnetURI = 'magnet:?xt=urn:btih:0afc47cb8d2bdf7ed14b8ecea871540360a2a726&dn
 var client = new WebTorrent();
 var app = express();
 
+// view engine ejs
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
+
 
 //INIZIO script momentaneo--------------------------
 
-var file_torrent;
-client.add(magnetURI, {path: './download'}, function (torrent) {
-
-    file_torrent = torrent.files[0];
-
-
-});
-client.on('error', function (err) {
-    console.log('errore client');
-})
+// var file_torrent;
+// client.add(magnetURI, {path: './download'}, function (torrent) {
+//
+//     file_torrent = torrent.files[0];
+//
+//
+// });
+// client.on('error', function (err) {
+//     console.log('errore client');
+// })
 //FINE script momentaneo---------------------
 
 
 //GET / return index page
 app.get('/', function (req, res) {
     res.send(index);
+});
+
+//GET / return index page
+app.get('/movie_info/:query', function (req, res) {
+    icn.search(req.params.query, "BDRiP", function (err, data) {
+        res.send(data);
+    });
+});
+
+//GET /movie/:query Return
+app.get('/movie/:query', function (req, res) {
+    console.log('/movie' + req.params.query);
+    icn.search(req.params.query, "BDRiP", function (err, data) {
+        if (err) throw err;
+        res.render('movie', {'title': 'titolo di prova'});
+    });
+});
+
+//GET /link/:url Return
+app.get('/link/:url', function (req, res) {
+    console.log('/link' + req.params.url);
+    icn.getMagnet(req.params.url, function (err, data) {
+        if (err) throw err;
+        res.send(data);
+    });
 });
 
 //GET /play return video-stream
@@ -97,119 +131,12 @@ app.get('/movies', function (req, res) {
         include_adult: 'false', include_video: 'false',
         page: '1', year: '2016'
     }, function (err, data) {
-        //if(err) throw err;
-        //console.log(data.results.length);
         var tot = data.results.length;
-        // var finished = _.after(2, function(res,data){
-        //   console.log('send');
-        //   res.send(data);
-        // });
         res.json(data);
-        // var movies = {};
-        // for(var i=0; i<tot; i++){
-        //   console.log(i);
-        //   icn.search("Star Wars", "BDRiP", function(err, data2){
-        //     if(err) throw err;
-        //     console.log('ok');
-        //       movies[i] = {'link': data2.link};
-        //       finished(res, movies);
-        //   });
-        // }
-
     });
 });
 
-//GET /test1 chiamata usata per test
-app.get('/test1', function (req, res) {
-    request('http://ilcorsaronero.info/argh.php?search=suicide+squad', function (error, response, body) {
-        var result = [];
-        var counter = 0;
-        if (!error && response.statusCode == 200) {
-            var $ = cheerio.load(body);
-            items = $('.odd, .odd2').filter(function () {
-                return $(this).children('td').eq(0).children('a').text() === "BDRiP";
-            });
-            items = $('.odd, .odd2').filter(function () {
-                var r = $(this).children('td').eq(2).text();
-                var s = r;
-                var str = s;
-                s = s.substring(0, s.length - 2);
-                b = str.substring(str.length - 2, str.length);
-                s = parseFloat(s);
-                if (b === "GB" && s > 1.5 && s < 10) {
-                    return true;
-                }
-                else return false;
-            });
 
-
-            items.each(function (i, row) {
-                var catScraped = $(row).children('td').eq(0).children('a').text(),
-                    name = $(this).children('td').eq(1).children('a').text(),
-                    link = '',
-                    size = $(row).children('td').eq(2).text(),
-                    date = $(row).children('td').eq(4).text(),
-                    seeds = $(row).children('td').eq(5).text(),
-                    peers = $(row).children('td').eq(6).text();
-                //console.log(i);
-                result.push({
-                    "cat": catScraped,
-                    "name": name,
-                    "link": link,
-                    "size": size,
-                    "date": date,
-                    "seeds": seeds,
-                    "peers": peers
-                });
-
-                counter++;
-                if (counter == items.length) {
-                    //console.log(result)
-                    res.send(result);
-                }
-            });
-
-
-        }
-        else {
-            res.send('errore');
-        }
-    })
-});
-
-//GET /test2 chiamata usata per test
-app.get('/test2', function (req, res) {
-    icn.search("Star Wars", "BDRiP", function (err, data) {
-        if (err) throw err;
-        console.log(data.length + " search");
-        res.send(data)
-    });
-
-});
-
-//GET /home chimata di test
-app.get('/home', function (req, res) {
-    console.log('home');
-    icn.search("Star Wars", "BDRiP", function (err, data) {
-        if (err) throw err;
-        //console.log(data);
-
-        var movies = [];
-        var i = 0;
-        console.log(data[0]);
-        for (var item in data) {
-            var m = new Movie(JSON.stringify(item.cat), JSON.stringify(item.name),
-                JSON.stringify(item.link), JSON.stringify(item.size),
-                JSON.stringify(item.date), JSON.stringify(item.seeds),
-                JSON.stringify(item.peers));
-            movies[i] = m.toJson();
-            i++;
-        }
-        res.send(movies);
-    });
-
-});
-
-
+//start server
 console.log('listein on 8888');
 app.listen(8888);
