@@ -1,54 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <title>Home Streaming</title>
     <script language="javascript" type="text/javascript">
-      // Find a <table> element with id="box":
-      // var table = $('#box');
-      //
-      // // Create an empty <tr> element and add it to the 1st position of the table:
-      // var row = table.insertRow(0);
-      //
-      // // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-      // var cell1 = row.insertCell(0);
-      //var cell2 = row.insertCell(1);
+        var jqxhr = $.getJSON("http://localhost:8888/movies", function (data) {
+            var items = [];
+            $.each(data.results, function (key, val) {
+                items.push("<img id='" + key + "'" + "src=' http://image.tmdb.org/t/p/w185//" + val.poster_path + "'>");
+            });
 
-      // Assign handlers immediately after making the request,
-      // and remember the jqxhr object for this request
-      var jqxhr = $.getJSON( "http://localhost:8888/movies", function(data) {
-        var items = [];
-         $.each( data.results, function( key, val ) {
-           items.push( "<img id='" + key + "'" + "src=' http://image.tmdb.org/t/p/w185//" + val.poster_path + "'>" );
-         });
-
-        $( "<ul/>", {
-          "class": "my-new-list",
-          html: items.join( "" )
-        }).appendTo( "body" );
+            $("<ul/>", {
+                "class": "my-new-list",
+                html: items.join("")
+            }).appendTo("body");
         });
-      // Perform other work here ...
-
-      // Set another completion function for the request above
-      // jqxhr.always(function() {
-      //   alert( "second finished" );
-      // });
-      // Add some text to the new cells:
-      // cell1.innerHTML = "<img id=\"movie\" src=\"\" height=\"142\" width=\"100\" >";
-      //cell2.innerHTML = "NEW CELL2";
 
     </script>
 </head>
 
 <body>
 
-  Home
-  <table style="width:100%" id="box">
+Home
+<table style="width:100%" id="box">
 
-  </table>
-  <div id="div1">
+</table>
+<div id="div1">
     ciao
-  </div>
+</div>
 </body>
 </html>
