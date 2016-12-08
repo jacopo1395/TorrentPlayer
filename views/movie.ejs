@@ -10,8 +10,10 @@
 </head>
 <body>
 Film
-<div id="data">
-    <%= title %>
-</div>
+
+<% data.forEach(function(movie) { %>
+<li><a href="http://localhost:8888/link?q=<%= movie.link %>" ><%= movie.name %> </a>- <%= movie.size %> </li>
+<% }); %>
+
 </body>
 </html>

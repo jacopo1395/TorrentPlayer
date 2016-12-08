@@ -12,40 +12,22 @@ _ = require('lodash');
 var Movie = require("./models/movie.js");
 
 //views
-var player = fs.readFileSync('./views/player.html', "utf8");
+// var player = fs.readFileSync('./views/player.html', "utf8");
 var index = fs.readFileSync('./views/index.html', "utf8");
-var movie = fs.readFileSync('./views/movie.html', "utf8");
+// var movie = fs.readFileSync('./views/movie.html', "utf8");
 
 //variables
 var api_key = '89b43c0850f63d51b9a2fde38e6db2f6';
 const mdb = require('moviedb')(api_key);
-var magnetURI = 'magnet:?xt=urn:btih:0afc47cb8d2bdf7ed14b8ecea871540360a2a726&dn=Suicide+Squad+2016+Extended+Cut%5BBDRip+-+1080p+-+Ita+Eng+Ac3+-+Sub+Ita+Eng%5DSperanzah%5Bwww.icv-crew%5D&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce';
 
 //init
 var client = new WebTorrent();
 var app = express();
 
-// view engine ejs
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
 app.set('view engine', 'ejs');
-
-
-//INIZIO script momentaneo--------------------------
-
-// var file_torrent;
-// client.add(magnetURI, {path: './download'}, function (torrent) {
-//
-//     file_torrent = torrent.files[0];
-//
-//
-// });
-// client.on('error', function (err) {
-//     console.log('errore client');
-// })
-//FINE script momentaneo---------------------
 
 
 //GET / return index page
@@ -65,25 +47,32 @@ app.get('/movie/:query', function (req, res) {
     console.log('/movie' + req.params.query);
     icn.search(req.params.query, "BDRiP", function (err, data) {
         if (err) throw err;
-        res.render('movie', {'title': 'titolo di prova'});
+        res.render('movie', {'data': data});
     });
 });
 
 //GET /link/:url Return
-app.get('/link/:url', function (req, res) {
-    console.log('/link' + req.params.url);
-    icn.getMagnet(req.params.url, function (err, data) {
+app.get('/link/', function (req, res) {
+    console.log('/link' + req.query.q);
+    var file_torrent;
+    icn.getMagnet(req.query.q, function (err, data) {
         if (err) throw err;
-        res.send(data);
+        client.add(data, {path: './download'}, function (torrent) {
+            file_torrent = torrent.files[0];
+            res.render('player', {'data': file_torrent.path});
+        });
+        client.on('error', function (err) {
+            console.log('errore client');
+        });
+
     });
 });
 
 //GET /play return video-stream
-app.get('/play', function (req, res) {
+app.get('/play/', function (req, res) {
     console.log('get');
-    console.log(__dirname);
-
-    var file = path.resolve(__dirname + '/download', file_torrent.path);
+    console.log(req.query.q);
+    var file = path.resolve(__dirname + '/download', req.query.q);
     fs.stat(file, function (err, stats) {
         if (err) {
             if (err.code === 'ENOENT') {
@@ -110,7 +99,8 @@ app.get('/play', function (req, res) {
             "Content-Type": "video/mkv"  //TODO: adattare ai vari formati video
         });
 
-        var stream = file_torrent.createReadStream({start: start, end: end})
+        //TODO: cercare in torrents e in fles (non è detto che bisogni prendere sempre quello in posizione [0] )
+        var stream = client.torrents[0].files[0].createReadStream({start: start, end: end})
 
         stream.pipe(res);
 
