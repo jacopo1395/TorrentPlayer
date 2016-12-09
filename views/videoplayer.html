@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<object type="application/x-chimera-plugin" width="320" height="240">
+    <param name="debug" value="true" />
+</object>
+
+<object type="application/x-fb-vlc" width="320" height="240">
+    <param name="windowless" value="true" /><param name="target" value="true" />
+</object>
+
+<script type="text/javascript">
+    var player = document.getElementById('player');
+    document.getElementById('interface').addEventListener('click', function() {
+        player.togglePause();
+    });
+</script>
+</body>
+</html>

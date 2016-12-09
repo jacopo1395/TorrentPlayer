@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="http://vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet">
+</head>
+<body>
+<div id="player"></div>
+<video src="http://localhost:8888/play/?q=<%= data %>" controls></video>
+
+<video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
+       data-setup="{}">
+    <source src="http://localhost:8888/play/?q=<%= data %>" type='video/mp4'>
+    <source src="http://localhost:8888/play/?q=<%= data %>" type='video/webm'>
+    <source src="http://localhost:8888/play/?q=<%= data %>" type='video/avi'>
+    <source src="http://localhost:8888/play/?q=<%= data %>" type='video/mkv'>
+    <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a web browser that
+        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+    </p>
+</video>
+
+
+<object classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921" codebase="http://download.videolan.org/pub/videolan/vlc/last/win32/axvlc.cab">
+    <param name="autostart" value="true" />
+    <param name="allowfullscreen" value="false" />
+    <param name="target" value="http://localhost:8888/play/?q=<%= data %>" />
+</object>
+
+<script src="http://vjs.zencdn.net/5.8.8/video.js"></script>
+</body>
+</html>
