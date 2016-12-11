@@ -7,7 +7,9 @@ var cheerio = require('cheerio');
 var WebTorrent = require('webtorrent');
 var icn = require('./lib/ilcorsaronero');
 _ = require('lodash');
-var Transcoder = require('stream-transcoder');
+var ffmpeg = require('fluent-ffmpeg');
+var child_process = require('child_process');
+
 
 
 //models
@@ -22,6 +24,7 @@ var index = fs.readFileSync('./views/index.html', "utf8");
 var api_key = '89b43c0850f63d51b9a2fde38e6db2f6';
 const mdb = require('moviedb')(api_key);
 var magnet = 'magnet:?xt=urn:btih:6a9759bffd5c0af65319979fb7832189f4f3c35d&dn=sintel.mp4&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel-1024-surround.mp4';
+
 
 //init
 var client = new WebTorrent();
@@ -89,7 +92,7 @@ app.get('/link/', function (req, res) {
 
             client.on('error', function (err) {
                 console.log(err);
-                res.send('errore');
+                res.render('vlc');
             });
         }
     });
@@ -137,49 +140,14 @@ app.get('/play/', function (req, res) {
 
 
         var stream = ((client.torrents[0].files[0]).createReadStream({start: start, end: end}));
-        // var stream = fs.createReadStream(__dirname + '/download/' + p);
-        // new Transcoder(stream)
-        //     .maxSize(1280, 720)
-        //     .videoCodec('h264')
-        //     .videoBitrate(800 * 1000)
-        //     .fps(25)
-        //     .sampleRate(44100)
-        //     .channels(2)
-        //     .audioBitrate(128 * 1000)
-        //     .format('mp4')
-        //     .on('finish', function () {
-        //         console.log("finished");
-        //     })
-        //     .stream().pipe(res);
 
         stream.pipe(res);
-
+        console.log('fine play');
 
     });
 
 });
 
-
-app.get("/video", function (req, res) {
-    res.writeHead(200, {'Content-Type': 'video/mp4'});
-    var src = "./download/Captain America - Civil war 2016.avi";
-
-    var Transcoder = require('stream-transcoder');
-    var stream = fs.createReadStream(src);
-    new Transcoder(stream)
-        .maxSize(1280, 720)
-        .videoCodec('h264')
-        .videoBitrate(800 * 1000)
-        .fps(25)
-        .sampleRate(44100)
-        .channels(2)
-        .audioBitrate(128 * 1000)
-        .format('mp4')
-        .on('finish', function () {
-            console.log("finished");
-        })
-        .stream().pipe(res);
-});
 
 // GET /player return player page
 app.get('/player', function (req, res) {
@@ -215,10 +183,10 @@ app.get('/movies', function (req, res) {
 
 app.get('/test', function (req, res) {
     console.log('get');
-    console.log(req.query.q);
+    //console.log(req.query.q);
     var p = req.query.q;
     var type = p.substring(p.length - 3, p.length);
-    console.log(type);
+    // console.log(type);
     var file = path.resolve(__dirname + '/download', p);
     fs.stat(file, function (err, stats) {
         if (err) {
@@ -234,27 +202,45 @@ app.get('/test', function (req, res) {
         //     return res.sendStatus(416);
         // }
         // var positions = range.replace(/bytes=/, "").split("-");
-        // var start = parseInt(positions[0], 10);
-        // var total = stats.size;
-        // var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-        // var chunksize = (end - start) + 1;
+        var positions = "0";
+        var start = parseInt(positions[0], 10);
+        var total = stats.size;
+        var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+        var chunksize = (end - start) + 1;
 
 
-        res.writeHead(206, {
+        res.writeHead({
             "Content-Range": "bytes " + start + "-" + end + "/" + total,
             "Accept-Ranges": "bytes",
             "Content-Length": chunksize,
-            "Content-Type": "video/" + type  //TODO: adattare ai vari formati video
+            "Content-Type": "video/" + type
         });
+        // res.contentType('mp4');
+
+        var stream = ((client.torrents[0].files[0]).createReadStream({start: start, end: end}));
+
+        var input_file = stream;
+        var process = child_process.spawn('ffmpeg', ['-i', 'pipe:0', '-f', 'mp4', '-movflags', 'frag_keyframe', 'pipe:1']);
+        input_file.pipe(process.stdin);
+        process.stdout.pipe(res);
 
 
-        //TODO: cercare in torrents e in fles (non è detto che bisogni prendere sempre quello in posizione [0] )
-        var stream = client.torrents[0].files[0].createReadStream()
+        console.log('fine test');
 
-        stream.pipe(res);
 
     });
 
+
+});
+
+app.get('/test2', function(req, res){
+    res.contentType('mp4');
+    // make sure you set the correct path to your video file storage
+    var path = __dirname + '/download/Suicide Squad (2016).EXTENDED.H264.ita.eng.iCV-MIRCrew.mkv';
+    var input_file = fs.createReadStream(path);
+    var process = child_process.spawn('ffmpeg', ['-i', 'pipe:0', '-f', 'mp4', '-movflags', 'frag_keyframe', 'pipe:1']);
+    input_file.pipe(process.stdin);
+    process.stdout.pipe(res);
 });
 
 var containsMagnet = function (elem, array) {
