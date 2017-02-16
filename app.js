@@ -53,7 +53,6 @@ app.get('/film/:page', function (req, res) {
         page: req.params.page, year: '2016'
     };
     if (req.query.g != null) opt.with_genres = req.query.g;
-    console.log(req.query.g);
     mdb.discoverMovie(opt, function (err, data) {
         res.json(data);
     });
@@ -71,10 +70,15 @@ app.get('/info/:id', function (req, res) {
             data.poster = info.poster_path;
             data.plot = info.overview;
             data.rate = info.vote_average;
-            res.render('movie', {'data': data});
+            data.genres = info.genres;
+            mdb.movieCredits({id: req.params.id}, function (err, cred) {
+                if (err) throw err;
+                data.cred=cred;
+                console.log(data.cred.cast);
+                res.render('movie', {'data': data});
+            });
         });
     });
-
 });
 
 app.get('/genres', function (req, res) {

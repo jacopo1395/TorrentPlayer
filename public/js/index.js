@@ -47,7 +47,7 @@ function setTitle(title) {
 
 var screenWidht = 6;
 var selected = null;
-var disable = false;
+var drop = false;
 document.onkeydown = function (evt) {
     screenWidht=Math.floor($(window).width()/200);
 
@@ -61,7 +61,7 @@ document.onkeydown = function (evt) {
         if (selected>=0) $("#"+selected).children()[0].click();
         else{
             $("#"+selected)[0].click();
-            disable=true;
+            drop=true;
         }
         return;
     }

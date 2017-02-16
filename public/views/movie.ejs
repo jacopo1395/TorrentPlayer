@@ -44,7 +44,7 @@
                                 <div class="form-group">
                                     <input type="text" class="form-control" placeholder="Search">
                                 </div>
-                                <button type="submit" class="btn btn-default">Submit</button>
+                                <button type="submit" class="btn btn-default">Cerca</button>
                             </form>
                         </li>
                     </ul>
@@ -61,37 +61,60 @@
 
 
     <div class="info">
-        <div class="info-title"><%= data.title %></div>
-        <div class="year align"><%= data.year %></div>
-        <div class="rate align"><%= data.rate %>/10</div>
+        <div>
+            <div class="info-title align"><%= data.title %></div>
+            <div class="rate align">
+                <div class="vote align"><%= data.rate %></div>
+                /10
+            </div>
+        </div>
+        <div>
+            <div class="year align"><%= data.year %></div>
+            <div class="genres align">
+                <% data.genres.forEach(function(i) { %>
+                - <%= i.name %>
+                <% }); %>
+                -
+            </div>
+        </div>
         <h2 class="plot">
             <%= data.plot %>
         </h2>
 
         <div class="bottoni">
-            <div class="panel-group">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" href="#collapse1">Links</a>
-                        </h4>
-                    </div>
-                    <div id="collapse1" class="panel-collapse collapse lista">
-                        <ul class="list-group">
-                            <% data.forEach(function(movie) { %>
-                            <li>
-                                <div class="list-group-item">
-                                <a  class="black-color " href="http://localhost:8888/link?q=<%= movie.link %>"><%= movie.name %> </a>
-                                <div class="blue-color "> - <%= movie.size %></div>
-                                </div>
-                            </li>
-                            <% }); %>
-                        </ul>
-                    </div>
-                </div>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Links
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <% data.forEach(function(movie) { %>
+                    <li>
+                        <div class="list-group-item">
+                            <a class="black-color "
+                               href="http://localhost:8888/link?q=<%= movie.link %>"><%= movie.name %> </a>
+                            <div class="blue-color ">  <%= movie.size %></div>
+                        </div>
+                    </li>
+                    <% }); %>
+                </ul>
             </div>
         </div>
+    </div>
 
+    <div class="credits green-color">
+        <div class="director">
+            Regia:
+            <% data.cred.crew.forEach(function(e) { %>
+                <%if (e.job == 'Director') { %>
+                     <%= e.name %> -
+                <% } %>
+            <% }); %>
+        </div>
+        <div class="cast green-color">
+            Cast:
+            <% for(var i =0 ; i<5 ; i++) { %>
+            <%= data.cred.cast[i].name %>  -
+            <% } %>
+        </div>
     </div>
 
 </div>

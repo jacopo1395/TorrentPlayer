@@ -3,7 +3,7 @@
     top: 100px;
     width: 55%;
     height: 441px;
-    left: 40%;
+    left: 35%;
     color: #CFD8DC;
     font-size: 100%;
     margin-right: 5%;
@@ -14,32 +14,40 @@
     color: #CFD8DC;
     font-size: 100%;
 }
+.info-image{
+    margin-bottom: 5px;
+}
 .info-title{
     font-size: 250%;
 }
 
 .year{
     width: auto;
-    margin-right: 5%;
     color: #448AFF;
 }
-
+.vote{
+    font-size: 150%;
+}
 .rate{
     width: auto;
+    margin-left: 5%;
     color: #448AFF;
+}
+.genres{
+    margin-left: 5%;
+    color: #4CAF50;
 }
 .plot{
     margin-top: 5%;
-    font-size: 150%;
+    font-size: 130%;
 }
 
 .bottoni{
-    position: absolute;
-    bottom: 0px;
 }
 
 .align{
-    float: left;
+    /*float: left;*/
+    display: inline-block
 }
 
 .black-color{
@@ -47,6 +55,9 @@
  }
 .blue-color{
     color: #448AFF;
+}
+.green-color{
+    color: #4CAF50;
 }
 .lista{
     width: 500px;
