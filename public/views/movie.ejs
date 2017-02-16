@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>eMovi</title>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/info.css">
+
+</head>
+<body>
+
+
+<div class="navbar-wrapper">
+    <div class="container">
+        <nav class="navbar  ">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                            aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">eMovi</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="http://localhost:8888/">Home</a></li>
+                        <li><a id="-3" href="http://localhost:8888/">Film</a></li>
+                        <li><a id="-2" href="#serie">Serie</a></li>
+                        <li>
+                            <form class="navbar-form navbar-left" role="search">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Search">
+                                </div>
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+    </div>
+</div>
+
+
+<div class="info-box">
+    <img class="info-image" width="300" height="441" src="http://image.tmdb.org/t/p/w342//<%= data.poster %>">
+
+
+    <div class="info">
+        <div class="info-title"><%= data.title %></div>
+        <div class="year align"><%= data.year %></div>
+        <div class="rate align"><%= data.rate %>/10</div>
+        <h2 class="plot">
+            <%= data.plot %>
+        </h2>
+
+        <div class="bottoni">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse1">Links</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse lista">
+                        <ul class="list-group">
+                            <% data.forEach(function(movie) { %>
+                            <li>
+                                <div class="list-group-item">
+                                <a  class="black-color " href="http://localhost:8888/link?q=<%= movie.link %>"><%= movie.name %> </a>
+                                <div class="blue-color "> - <%= movie.size %></div>
+                                </div>
+                            </li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

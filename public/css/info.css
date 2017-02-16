@@ -1,0 +1,53 @@
+.info{
+    position: absolute;
+    top: 100px;
+    width: 55%;
+    height: 441px;
+    left: 40%;
+    color: #CFD8DC;
+    font-size: 100%;
+    margin-right: 5%;
+}
+.info-box{
+    margin: 46px;
+    margin-left: 80px;
+    color: #CFD8DC;
+    font-size: 100%;
+}
+.info-title{
+    font-size: 250%;
+}
+
+.year{
+    width: auto;
+    margin-right: 5%;
+    color: #448AFF;
+}
+
+.rate{
+    width: auto;
+    color: #448AFF;
+}
+.plot{
+    margin-top: 5%;
+    font-size: 150%;
+}
+
+.bottoni{
+    position: absolute;
+    bottom: 0px;
+}
+
+.align{
+    float: left;
+}
+
+.black-color{
+     color: #263238;
+ }
+.blue-color{
+    color: #448AFF;
+}
+.lista{
+    width: 500px;
+}

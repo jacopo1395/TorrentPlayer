@@ -17,7 +17,13 @@
   },
   "homepage": "https://github.com/jacopo1395/TorrentPlayer#readme",
   "dependencies": {
+    "cheerio": "^0.22.0",
+    "ejs": "^1.0.0",
     "express": "^4.12.2",
-    "ejs": "^1.0.0"
+    "fluent-ffmpeg": "^2.1.0",
+    "lodash": "^4.17.4",
+    "moviedb": "^0.2.7",
+    "request": "^2.79.0",
+    "webtorrent": "^0.98.8"
   }
 }
