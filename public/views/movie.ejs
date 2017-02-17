@@ -90,7 +90,7 @@
                     <li>
                         <div class="list-group-item">
                             <a class="black-color "
-                               href="http://localhost:8888/link?q=<%= movie.link %>"><%= movie.name %> </a>
+                               href="http://localhost:8888/player?q=<%= movie.link %>"><%= movie.name %> </a>
                             <div class="blue-color ">  <%= movie.size %></div>
                         </div>
                     </li>
@@ -98,6 +98,15 @@
                 </ul>
             </div>
         </div>
+        <% data.forEach(function(movie) { %>
+        <li>
+            <div class="list-group-item">
+                <a class="black-color "
+                   href="http://localhost:8888/player?q=<%= movie.link %>"><%= movie.name %> </a>
+                <div class="blue-color ">  <%= movie.size %></div>
+            </div>
+        </li>
+        <% }); %>
     </div>
 
     <div class="credits green-color">
