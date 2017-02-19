@@ -3,13 +3,13 @@
  */
 var movies = [];
 var page = 1;
-$.getJSON("http://localhost:8888/movies/" + page, function (data) {
+$.getJSON("http://jacopo.westeurope.cloudapp.azure.com:8888/movies/" + page, function (data) {
     var items = [];
     movies = data.results;
     page++;
     var i = 0;
     $.each(data.results, function (key, val) {
-        items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + key + "' > <a class='link' href='http://localhost:8888/movie_info/" + val.id + "'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
+        items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + key + "' > <a class='link' href='http://jacopo.westeurope.cloudapp.azure.com:8888/movie_info/" + val.id + "'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
     });
     $("<div>", {
         "class": "row",
@@ -19,7 +19,7 @@ $.getJSON("http://localhost:8888/movies/" + page, function (data) {
 
 });
 
-$.getJSON("http://localhost:8888/genres", function (data) {
+$.getJSON("http://jacopo.westeurope.cloudapp.azure.com:8888/genres", function (data) {
     var items = [];
     $.each(data.genres, function (key, val) {
         items.push("<li> <a id = '" + val.id + "' onClick = 'filter(this.id);'>" + val.name + " </a></li>");
@@ -29,13 +29,13 @@ $.getJSON("http://localhost:8888/genres", function (data) {
 
 function filter(g) {
     console.log(g);
-    $.getJSON("http://localhost:8888/movies/1?g=" + g, function (data) {
+    $.getJSON("http://jacopo.westeurope.cloudapp.azure.com:8888/movies/1?g=" + g, function (data) {
         page = 0;
         var items = [];
         movies = data.results;
         var i = 0;
         $.each(data.results, function (key, val) {
-            items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + key + "' > <a class='link' href='http://localhost:8888/movie_info/" + val.id + "'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
+            items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + key + "' > <a class='link' href='http://jacopo.westeurope.cloudapp.azure.com:8888/movie_info/" + val.id + "'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
         });
         $(".row").remove();
         $("<div>", {
@@ -182,14 +182,14 @@ function load() {
         $(window).unbind('scroll');
         console.log("near bottom!");
         console.log(movies.length);
-        $.getJSON("http://localhost:8888/movies/" + page, function (data) {
+        $.getJSON("http://jacopo.westeurope.cloudapp.azure.com:8888/movies/" + page, function (data) {
             console.log("data");
             var items = [];
             var i = movies.length;
             movies = movies.concat(data.results);
             page++;
             $.each(data.results, function (key, val) {
-                items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + (key+i) + "' > <a class='link' href='http://localhost:8888/movie_info/" + val.id + "'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
+                items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + (key+i) + "' > <a class='link' href='http://jacopo.westeurope.cloudapp.azure.com:8888/movie_info/" + val.id + "'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
             });
             $('.row').append(items.join(""));
             $(window).scroll(load);
