@@ -16,13 +16,14 @@
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/info.css">
 
+    <script src="../js/info.js"></script>
+
 </head>
 <body>
 
-
 <div class="navbar-wrapper">
     <div class="container">
-        <nav class="navbar  ">
+        <nav class="navbar  " >
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
@@ -39,6 +40,13 @@
                         <li class="active"><a href="http://localhost:8888/">Home</a></li>
                         <li><a id="-3" href="http://localhost:8888/">Film</a></li>
                         <li><a id="-2" href="#serie">Serie</a></li>
+                        <li class="dropdown">
+                            <a id="-1" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">Genere <span class="caret"></span></a>
+                            <ul class="dropdown-menu" id="genres">
+                                <li><a href="http://localhost:8888/">Tutti</a></li>
+                            </ul>
+                        </li>
                         <li>
                             <form class="navbar-form navbar-left" role="search">
                                 <div class="form-group">
@@ -81,32 +89,7 @@
             <%= data.plot %>
         </h2>
 
-        <div class="bottoni">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Links
-                    <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                    <% data.forEach(function(movie) { %>
-                    <li>
-                        <div class="list-group-item">
-                            <a class="black-color "
-                               href="http://localhost:8888/player?q=<%= movie.link %>"><%= movie.name %> </a>
-                            <div class="blue-color ">  <%= movie.size %></div>
-                        </div>
-                    </li>
-                    <% }); %>
-                </ul>
-            </div>
-        </div>
-        <% data.forEach(function(movie) { %>
-        <li>
-            <div class="list-group-item">
-                <a class="black-color "
-                   href="http://localhost:8888/player?q=<%= movie.link %>"><%= movie.name %> </a>
-                <div class="blue-color ">  <%= movie.size %></div>
-            </div>
-        </li>
-        <% }); %>
+       <a href="http://localhost:8888/play/<%= data.title%>"  >Play</a>
     </div>
 
     <div class="credits green-color">

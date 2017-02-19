@@ -4,29 +4,21 @@ var path = require('path');
 var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
-var WebTorrent = require('webtorrent');
-var icn = require('./lib/ilcorsaronero');
-_ = require('lodash');
-var ffmpeg = require('fluent-ffmpeg');
-var child_process = require('child_process');
-
-
-//models
-var Movie = require("./models/movie.js");
-
-//views
-// var player = fs.readFileSync('./views/player.html', "utf8");
-var index = fs.readFileSync('./public/views/index.html', "utf8");
-// var movie = fs.readFileSync('./views/movie.html', "utf8");
 
 //variables
 var api_key = '89b43c0850f63d51b9a2fde38e6db2f6';
 const mdb = require('moviedb')(api_key);
-var magnet = 'magnet:?xt=urn:btih:6a9759bffd5c0af65319979fb7832189f4f3c35d&dn=sintel.mp4&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel-1024-surround.mp4';
+var altadefinizione = "http://altadefinizione.cafe/";
+
+
+//views
+var index = fs.readFileSync('./public/views/index.html', "utf8");
+var movies = index;
+// var movie_info = fs.readFileSync('./public/views/movie_info.html', "utf8");
+// var player = fs.readFileSync('./public/views/player.html', "utf8");
 
 
 //init
-var client = new WebTorrent();
 var app = express();
 
 
@@ -34,18 +26,37 @@ var app = express();
 app.set('views', path.join(__dirname, 'public/views'));
 app.set('view engine', 'ejs');
 
+
+//setup plublic dir
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-//GET / return index page
+// ------------------APIs-------------------------
+
 app.get('/', function (req, res) {
     console.log('/');
+    res.status(200);
     res.send(index);
 });
 
+// app.get('/movies_page', function (req, res) {
+//     console.log('/movies');
+//     res.send(movies);
+// });
+
+// app.get('/movie_info_page', function (req, res) {
+//     console.log('/movie_info');
+//     res.send(movie_info);
+// });
+
+// app.get('/player_page', function (req, res) {
+//     console.log('/player');
+//     res.send(player);
+// });
+
 
 //GET /index/:page?g=genere return info movies
-app.get('/film/:page', function (req, res) {
+app.get('/movies/:page', function (req, res) {
     console.log('/movies');
     var opt = {
         language: 'it-IT', sort_by: 'popularity.desc',
@@ -58,24 +69,22 @@ app.get('/film/:page', function (req, res) {
     });
 });
 
-//GET /movie/:query Return
-app.get('/info/:id', function (req, res) {
-    console.log('/movie ' + req.params.id);
+//GET /info/:query Return
+app.get('/movie_info/:id', function (req, res) {
+    console.log('/movie_info ' + req.params.id);
     mdb.movieInfo({id: req.params.id, language: 'it-IT'}, function (err, info) {
         if (err) throw err;
-        icn.search(info.title, "BDRiP", function (err, data) {
+        var data = {};
+        data.title = info.title;
+        data.year = info.release_date.substring(0, 4);
+        data.poster = info.poster_path;
+        data.plot = info.overview;
+        data.rate = info.vote_average;
+        data.genres = info.genres;
+        mdb.movieCredits({id: req.params.id}, function (err, cred) {
             if (err) throw err;
-            data.title = info.title;
-            data.year = info.release_date.substring(0, 4);
-            data.poster = info.poster_path;
-            data.plot = info.overview;
-            data.rate = info.vote_average;
-            data.genres = info.genres;
-            mdb.movieCredits({id: req.params.id}, function (err, cred) {
-                if (err) throw err;
-                data.cred = cred;
-                res.render('movie', {'data': data});
-            });
+            data.cred = cred;
+            res.render('movie_info', {'data': data});
         });
     });
 });
@@ -87,141 +96,127 @@ app.get('/genres', function (req, res) {
     });
 });
 
-
-//GET /link Return
-app.get('/player/', function (req, res) {
-    console.log('/player ' + req.query.q);
-    var file_torrent;
-    icn.getMagnet(req.query.q, function (err, data) {
-        if (err) throw err;
-        console.log('magnet ottenuto')
-        if (containsMagnet(data, client.torrents)) {
-            console.log('già aggiunto');
-            res.render('player', {'data': t.path});
-        }
-        else {
-            client.add(data, {path: './download'}, function (torrent) {
-                console.log('add magnet');
-                file_torrent = torrent.files[0];
-
-                file_torrent.on('ready', function () {
-                    console.log('ready');
+app.get('/play/:title', function (req, res) {
+    var s = (req.params.title).replace("", "+");
+    var url = altadefinizione + "?s=" + s;
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var $ = cheerio.load(body);
+            url = $(".col-lg-3.col-md-3.col-xs-3").children().eq(0).attr("href");
+            console.log(url);
+            request(url, function (error, response, body) {
+                $ = cheerio.load(body);
+                url = $("#iframeVid").attr("src");
+                console.log(url);
+                request(url, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        $ = cheerio.load(body);
+                        var regex = /http:\/\/hdpass\.net\/film\.php\?idFilm=.*">1080P/, indices = [];
+                        var html = $('body').html().toString();
+                        var re = "http://hdpass.net/film.php?idFilm=";
+                        var idx = html.indexOf(re);
+                        while (idx != -1) {
+                            indices.push(idx);
+                            idx = html.indexOf(re, idx + 1);
+                        }
+                        var re2 = ">1080P";
+                        var stop = html.indexOf(re2);
+                        var start;
+                        for (var j = indices.length - 1; j >= 0; j--) {
+                            if (indices[j] < stop) {
+                                start = indices[j];
+                                break;
+                            }
+                        }
+                        url = html.substring(start, stop - 1);
+                        url=url.replace("amp;","");
+                        url=url.replace("amp;","");
+                        url=url.replace("amp;","");
+                        console.log(url);
+                        request(url, function (error, response, body) {
+                            if (!error && response.statusCode == 200) {
+                                $ = cheerio.load(body);
+                                var urlEmbed = $('#urlEmbed').val();
+                                urlEmbed = clearify(urlEmbed);
+                                var iframe = '<iframe width="100%" height="100%" src="' + urlEmbed + '" frameborder="0" scrolling="no" allowfullscreen />';
+                                console.log(urlEmbed);
+                                request(urlEmbed, function (error, response, body) {
+                                    if (!error && response.statusCode == 200) {
+                                        $ = cheerio.load(body);
+                                        var decode = $('#mediaspace_wrapper').children().eq(6).children().eq(0).text();
+                                        decode = get_utl(decode);
+                                        var videourl = "https://openload.co/stream/" + decode + "?mime=true";
+                                        res.render('player', {'videourl': videourl});
+                                    } else res.send('err');
+                                });
+                            } else res.send("err");
+                        });
+                    } else res.send("err");
                 });
-                file_torrent.on('infoHash', function () {
-                    console.log('infoHash');
-                });
-                file_torrent.on('metadata', function () {
-                    console.log('metadata');
-                });
-                file_torrent.on('done', function () {
-                    console.log('done');
-                });
-                file_torrent.on('download', function (bytes) {
-                    console.log('download');
-                });
-                console.log('render');
-                res.render('player', {'data': file_torrent.path});
             });
-            client.on('torrent', function (torrent) {
-                console.log("torrent");
-
-            });
-
-            client.on('error', function (err) {
-                console.log(err);
-                res.send('error');
-            });
-        }
-    });
-
-});
-
-app.get('/play3', function (req, res) {
-    console.log('/play');
-    //console.log(req.query.q);
-    var p = req.query.q;
-    var type = p.substring(p.length - 3, p.length);
-    // console.log(type);
-    var file = path.resolve(__dirname + '/download', p);
-    fs.stat(file, function (err, stats) {
-        if (err) {
-            if (err.code === 'ENOENT') {
-                // 404 Error if file not found
-                return res.sendStatus(404);
-            }
-            res.end(err);
-        }
-        var range = req.headers.range;
-        if (!range) {
-            // 416 Wrong range
-            return res.sendStatus(416);
-        }
-        var positions = range.replace(/bytes=/, "").split("-");
-        var start = parseInt(positions[0], 10);
-        var total = stats.size;
-        var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-        var chunksize = (end - start) + 1;
+        } else res.send("err");
+    })
+})
 
 
-        // res.writeHead(200, {
-        //     "Content-Range": "bytes " + start + "-" + end + "/" + total,
-        //     "Accept-Ranges": "bytes",
-        //     "Content-Length": chunksize,
-        //     "Content-Type": "video/" + type
-        // });
-        res.contentType('mp4');
 
-        var stream = ((client.torrents[0].files[0]).createReadStream({start: start, end: end}));
-
-        var input_file = stream;
-        var process = child_process.spawn('ffmpeg', ['-i', 'pipe:0', '-f', 'mp4', '-movflags', 'frag_keyframe', 'pipe:1']);
-        input_file.pipe(process.stdin);
-        process.stdout.pipe(res);
-        console.log('fine test');
-
-
-    });
-
-
-});
-
-app.get('/play2', function (req, res) {
-    res.contentType('/play2');
-    // make sure you set the correct path to your video file storage
-    var p = req.query.q;
-    var type = p.substring(p.length - 3, p.length);
-    // console.log(type);
-    var file = path.resolve(__dirname + '/download', p);
-    var input_file = fs.createReadStream(file);
-    var process = child_process.spawn('ffmpeg', ['-i', 'pipe:0', '-f', 'mp4', '-movflags', 'frag_keyframe', 'pipe:1']);
-    input_file.pipe(process.stdin);
-    process.stdout.pipe(res);
-});
-
-app.get('/play', function(req,res){
-    var p = req.query.q;
-    var type = p.substring(p.length - 3, p.length);
-    // console.log(type);
-    var file = path.resolve(__dirname + '/download', p);
-    var stream = ((client.torrents[0].files[0]).createReadStream());
-    var command = ffmpeg(file);
-    res.contentType('mp4');
-    command.output(__dirname +'/download/outputfile.mp4').run();
-    var out = ffmpeg(__dirname +'/download/outputfile.mp4');
-    out.output(res).run();
-
-
-});
-
-var containsMagnet = function (elem, array) {
-    for (var i in array) {
-        if (i.magnetURI === elem) {
-            return true;
-        }
+// function tools
+function clearify(url) {
+    var size = url.length;
+    if (size % 2 == 0) {
+        var halfIndex = size / 2;
+        var firstHalf = url.substring(0, halfIndex);
+        var secondHalf = url.substring(halfIndex, size);
+        var url = secondHalf + firstHalf;
+        var base = url.split("").reverse().join("");
+        // var clearText = $.base64('decode', base);
+        //return clearText
+        var buf = Buffer.from(base, 'base64'); // Ta-da
+        return buf.toString('utf8');
+    } else {
+        var lastChar = url[size - 1];
+        url[size - 1] = ' ';
+        url = $.trim(url);
+        var newSize = url.length;
+        var halfIndex = newSize / 2;
+        var firstHalf = url.substring(0, halfIndex);
+        var secondHalf = url.substring(halfIndex, newSize);
+        url = secondHalf + firstHalf;
+        var base = url.split("").reverse().join("");
+        base = base + lastChar;
+        console.log(base);
+        //var clearText = $.base64('decode', base);
+        var buf = Buffer.from(base, 'base64'); // Ta-da
+        return buf.toString('utf8');
     }
-    return false;
-};
+}
 
-//start server
+function get_utl(encode) {
+    try {
+        first_two_chars = parseInt(parseFloat(encode[0] + encode[1]))
+
+        tab_code = {}
+        index = 2
+        while (index < (encode.length)) {
+            key = parseInt(parseFloat(encode[index + 3] + encode[index + 3 + 1]))
+            tab_code[key] = String.fromCharCode(parseInt(parseFloat(encode[index] + encode[index + 1] + encode[index + 2])) - first_two_chars)
+            index += 5
+        }
+        //sorted(tab_code, key)
+        var text_decode = '';
+        for (var key in tab_code) {
+            if (tab_code.hasOwnProperty(key))
+                text_decode = text_decode + tab_code[key]
+        }
+        return text_decode;
+    } catch (e) {
+
+    }
+
+}
+
+
+
+//start server on port 8888
 console.log('listein on 8888');
 app.listen(8888);
