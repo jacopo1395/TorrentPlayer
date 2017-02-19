@@ -55,7 +55,7 @@ app.get('/', function (req, res) {
 //     console.log('/player');
 //     res.send(player);
 // });
-
+//
 
 //GET /index/:page?g=genere return info movies
 app.get('/movies/:page', function (req, res) {
