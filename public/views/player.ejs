@@ -18,10 +18,11 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/navbar.css">
 
+    <script src="http://cdn.dashjs.org/latest/dash.all.min.js"></script>
 
 </head>
 
-<body>
+<body onload="setupVideo()">
 <div class="navbar-wrapper">
     <div class="container">
         <nav class="navbar  " >
@@ -70,24 +71,38 @@
 
 <div class="container box">
 
-    <video controls>
-        <source src="<%= data.videourl%>" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <!--<video controls>-->
+        <!--<source src="<%= data.videourl%>" type="video/mp4">-->
+        <!--Your browser does not support the video tag.-->
+    <!--</video>-->
+
+    <video data-dashjs-player autoplay  width="640" height="264" src="<%= data.videourl%>" controls></video>
 
 
-    <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
-          data-setup="{}">
-        <source src="<%= data.videourl%>" type='video/mp4'>
-        <source src="<%= data.videourl%>" type='video/webm'>
-        <p class="vjs-no-js">
-            To view this video please enable JavaScript, and consider upgrading to a web browser that
-            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-        </p>
-    </video>
+    <!--<video id="my-video" class="video-js" controls preload="auto" width="640" height="264"-->
+          <!--data-setup="{}">-->
+        <!--<source src="<%= data.videourl%>" type='video/mp4'>-->
+        <!--<source src="<%= data.videourl%>" type='video/webm'>-->
+        <!--<p class="vjs-no-js">-->
+            <!--To view this video please enable JavaScript, and consider upgrading to a web browser that-->
+            <!--<a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>-->
+        <!--</p>-->
+    <!--</video>-->
 
-    <script src="http://vjs.zencdn.net/5.16.0/video.js"></script>
+    <!--<script src="http://vjs.zencdn.net/5.16.0/video.js"></script>-->
 
+
+    <!--<script>-->
+        <!--// setup the video element and attach it to the Dash player-->
+        <!--function setupVideo() {-->
+            <!--var url = "http://wams.edgesuite.net/media/MPTExpressionData02/BigBuckBunny_1080p24_IYUV_2ch.ism/manifest(format=mpd-time-csf)";-->
+            <!--var context = new Dash.di.DashContext();-->
+            <!--var player = new MediaPlayer(context);-->
+            <!--player.startup();-->
+            <!--player.attachView(document.querySelector("#videoplayer"));-->
+            <!--player.attachSource(url);-->
+        <!--}-->
+    <!--</script>-->
 </div>
 
 <!-- //general -->
