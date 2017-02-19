@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/info.css">
 
-    <script src="../js/info.js"></script>
 
 </head>
 <body>
@@ -89,7 +88,10 @@
             <%= data.plot %>
         </h2>
 
-       <a href="http://localhost:8888/play/<%= data.title%>"  >Play</a>
+       <!--<a href="http://localhost:8888/play/<%= data.title%>"  >Play</a>-->
+        <button type="button" class="btn btn-primary btn-lg">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play
+        </button>
     </div>
 
     <div class="credits green-color">

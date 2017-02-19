@@ -55,125 +55,125 @@ function setTitle(title) {
 var screenWidht = 6;
 var selected = null;
 var drop = false;
-document.onkeydown = function (evt) {
-    screenWidht = Math.floor($(window).width() / 200);
-    console.log(screenWidht)
-    evt = evt || window.event;
-    if (selected == null) {
-        $("#0").children().children(".image").addClass("imageSelected");
-        selected = 0;
-        return;
-    }
-    if (evt.keyCode == 13) {
-        if (selected >= 0) $("#" + selected).children()[0].click();
-        else {
-            $("#" + selected)[0].click();
-            drop = true;
-        }
-        return;
-    }
-    switch (evt.keyCode) {
-        case 37: //left
-            if (selected > -3) {
-                if (selected >= 0) $("#" + selected).children().children(".image").removeClass("imageSelected");
-                else $("#" + selected).removeClass("linkSelected");
-
-                selected--;
-                if (selected >= 0) {
-                    $("#" + selected).children().children(".image").addClass("imageSelected");
-                    var center = ($(window).height() / 2) - 200;
-                    var top = $("#" + selected).offset().top;
-                    if (top > center) {
-                        $(window).scrollTop(top - center);
-                    }
-                    else {
-                        location.href = "#";
-                    }
-                }
-                else $("#" + selected).addClass("linkSelected");
-            }
-            break;
-
-        case 38: //up
-            if (selected < screenWidht) {
-                //navbar
-                if (selected >= 0) {
-                    $("#" + selected).children().children(".image").removeClass("imageSelected");
-                    selected = -1;
-                    $("#" + selected).addClass("linkSelected");
-                }
-            } else {
-                $("#" + selected).children().children(".image").removeClass("imageSelected");
-                selected = selected - screenWidht;
-                $("#" + selected).children().children(".image").addClass("imageSelected");
-                var center = ($(window).height() / 2) - 200;
-                var top = $("#" + selected).offset().top;
-                if (top > center) {
-                    $(window).scrollTop(top - center);
-                }
-                else {
-                    location.href = "#";
-                }
-            }
-            break;
-
-        case 39: //right
-            if (selected < $(".row").children().length - 1) {
-                if (selected < 0) {
-                    $("#" + selected).removeClass("linkSelected");
-                    selected++;
-                    if (selected < 0) {
-                        $("#" + selected).addClass("linkSelected");
-                    }
-                    else {
-                        $("#" + selected).children().children(".image").addClass("imageSelected");
-                    }
-                }
-                else {
-                    $("#" + selected).children().children(".image").removeClass("imageSelected");
-                    selected++;
-                    $("#" + selected).children().children(".image").addClass("imageSelected");
-                    var center = ($(window).height() / 2) - 200;
-                    var top = $("#" + selected).offset().top;
-                    if (top > center) {
-                        $(window).scrollTop(top - center);
-                    }
-                }
-            }
-
-            break;
-        case 40: //down
-            $("#" + selected).children().children(".image").removeClass("imageSelected");
-            if (selected + screenWidht < $(".row").children().length - 1) {
-                if (selected < 0) {
-                    $("#" + selected).removeClass("linkSelected");
-                    selected = 0;
-                    $("#" + selected).children().children(".image").addClass("imageSelected");
-                }
-                else {
-                    selected = selected + screenWidht;
-                    $("#" + selected).children().children(".image").addClass("imageSelected");
-                    // location.href = "#";
-                    // location.href = "#"+selected;
-                    var center = ($(window).height() / 2) - 200;
-                    var top = $("#" + selected).offset().top;
-                    if (top > center) {
-                        $(window).scrollTop(top - center);
-                    }
-                }
-            }
-            else {
-                selected = $(".row").children().length - 1;
-                $("#" + selected).children().children(".image").addClass("imageSelected");
-                var center = ($(window).height() / 2) - 200;
-                var top = $("#" + selected).offset().top;
-                if (top > center) {
-                    $(window).scrollTop(top - center);
-                }
-            }
-            break;
-    }
-}
+// document.onkeydown = function (evt) {
+//     screenWidht = Math.floor($(window).width() / 200);
+//     console.log(screenWidht)
+//     evt = evt || window.event;
+//     if (selected == null) {
+//         $("#0").children().children(".image").addClass("imageSelected");
+//         selected = 0;
+//         return;
+//     }
+//     if (evt.keyCode == 13) {
+//         if (selected >= 0) $("#" + selected).children()[0].click();
+//         else {
+//             $("#" + selected)[0].click();
+//             drop = true;
+//         }
+//         return;
+//     }
+//     switch (evt.keyCode) {
+//         case 37: //left
+//             if (selected > -3) {
+//                 if (selected >= 0) $("#" + selected).children().children(".image").removeClass("imageSelected");
+//                 else $("#" + selected).removeClass("linkSelected");
+//
+//                 selected--;
+//                 if (selected >= 0) {
+//                     $("#" + selected).children().children(".image").addClass("imageSelected");
+//                     var center = ($(window).height() / 2) - 200;
+//                     var top = $("#" + selected).offset().top;
+//                     if (top > center) {
+//                         $(window).scrollTop(top - center);
+//                     }
+//                     else {
+//                         location.href = "#";
+//                     }
+//                 }
+//                 else $("#" + selected).addClass("linkSelected");
+//             }
+//             break;
+//
+//         case 38: //up
+//             if (selected < screenWidht) {
+//                 //navbar
+//                 if (selected >= 0) {
+//                     $("#" + selected).children().children(".image").removeClass("imageSelected");
+//                     selected = -1;
+//                     $("#" + selected).addClass("linkSelected");
+//                 }
+//             } else {
+//                 $("#" + selected).children().children(".image").removeClass("imageSelected");
+//                 selected = selected - screenWidht;
+//                 $("#" + selected).children().children(".image").addClass("imageSelected");
+//                 var center = ($(window).height() / 2) - 200;
+//                 var top = $("#" + selected).offset().top;
+//                 if (top > center) {
+//                     $(window).scrollTop(top - center);
+//                 }
+//                 else {
+//                     location.href = "#";
+//                 }
+//             }
+//             break;
+//
+//         case 39: //right
+//             if (selected < $(".row").children().length - 1) {
+//                 if (selected < 0) {
+//                     $("#" + selected).removeClass("linkSelected");
+//                     selected++;
+//                     if (selected < 0) {
+//                         $("#" + selected).addClass("linkSelected");
+//                     }
+//                     else {
+//                         $("#" + selected).children().children(".image").addClass("imageSelected");
+//                     }
+//                 }
+//                 else {
+//                     $("#" + selected).children().children(".image").removeClass("imageSelected");
+//                     selected++;
+//                     $("#" + selected).children().children(".image").addClass("imageSelected");
+//                     var center = ($(window).height() / 2) - 200;
+//                     var top = $("#" + selected).offset().top;
+//                     if (top > center) {
+//                         $(window).scrollTop(top - center);
+//                     }
+//                 }
+//             }
+//
+//             break;
+//         case 40: //down
+//             $("#" + selected).children().children(".image").removeClass("imageSelected");
+//             if (selected + screenWidht < $(".row").children().length - 1) {
+//                 if (selected < 0) {
+//                     $("#" + selected).removeClass("linkSelected");
+//                     selected = 0;
+//                     $("#" + selected).children().children(".image").addClass("imageSelected");
+//                 }
+//                 else {
+//                     selected = selected + screenWidht;
+//                     $("#" + selected).children().children(".image").addClass("imageSelected");
+//                     // location.href = "#";
+//                     // location.href = "#"+selected;
+//                     var center = ($(window).height() / 2) - 200;
+//                     var top = $("#" + selected).offset().top;
+//                     if (top > center) {
+//                         $(window).scrollTop(top - center);
+//                     }
+//                 }
+//             }
+//             else {
+//                 selected = $(".row").children().length - 1;
+//                 $("#" + selected).children().children(".image").addClass("imageSelected");
+//                 var center = ($(window).height() / 2) - 200;
+//                 var top = $("#" + selected).offset().top;
+//                 if (top > center) {
+//                     $(window).scrollTop(top - center);
+//                 }
+//             }
+//             break;
+//     }
+// }
 
 
 function load() {
@@ -189,7 +189,7 @@ function load() {
             movies = movies.concat(data.results);
             page++;
             $.each(data.results, function (key, val) {
-                items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + (key + i) + "' > <a class='link' onCLick='return movie(" + (key + i) + ");' href='#'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
+                items.push("<div class='wrapperImage  col-sm-3 col-md-3 col-lg-2'  id='" + (key+i) + "' > <a class='link' href='http://localhost:8888/movie_info/" + val.id + "'> <img width='190' height='280'  src='http://image.tmdb.org/t/p/w185//" + val.poster_path + "' class='image'> </a> <h2 class='title' width='150'> <a href=''>" + setTitle(val.title) + "</a> <h2 class='rate'>" + val.vote_average + "</h2> </h2></div>");
             });
             $('.row').append(items.join(""));
             $(window).scroll(load);
