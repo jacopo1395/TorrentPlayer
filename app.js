@@ -36,7 +36,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function (req, res) {
     console.log('/');
     res.status(200);
-    res.setHeader('Content-Type', 'application/html');
     res.send(index);
 });
 
@@ -86,7 +85,6 @@ app.get('/movie_info/:id', function (req, res) {
         mdb.movieCredits({id: req.params.id}, function (err, cred) {
             if (err) throw err;
             data.cred = cred;
-            res.setHeader('Content-Type', 'application/html');
             res.render('movie_info', {'data': data});
         });
     });
@@ -150,7 +148,6 @@ app.get('/play/:title', function (req, res) {
                                         var decode = $('#mediaspace_wrapper').children().eq(6).children().eq(0).text();
                                         decode = get_utl(decode);
                                         var videourl = "https://openload.co/stream/" + decode + "?mime=true";
-                                        res.setHeader('Content-Type', 'application/html');
                                         res.render('player', {'videourl': videourl});
                                     } else res.send('err');
                                 });
