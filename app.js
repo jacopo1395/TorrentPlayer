@@ -9,7 +9,8 @@ var cheerio = require('cheerio');
 var api_key = '89b43c0850f63d51b9a2fde38e6db2f6';
 const mdb = require('moviedb')(api_key);
 var altadefinizione = "http://altadefinizione.cafe/";
-
+var address = "http://jacopo.westeurope.cloudapp.azure.com:8888";
+// var address = "http://localhost:8888";
 
 //views
 var index = fs.readFileSync('./public/views/index.html', "utf8");
@@ -35,25 +36,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function (req, res) {
     console.log('/');
-    res.status(200);
-    res.send(index);
+    res.render('index', {'address': address});
 });
 
-// app.get('/movies_page', function (req, res) {
-//     console.log('/movies');
-//     res.send(movies);
-// });
-
-// app.get('/movie_info_page', function (req, res) {
-//     console.log('/movie_info');
-//     res.send(movie_info);
-// });
-
-// app.get('/player_page', function (req, res) {
-//     console.log('/player');
-//     res.send(player);
-// });
-//
 
 //GET /index/:page?g=genere return info movies
 app.get('/movies/:page', function (req, res) {
@@ -85,6 +70,7 @@ app.get('/movie_info/:id', function (req, res) {
         mdb.movieCredits({id: req.params.id}, function (err, cred) {
             if (err) throw err;
             data.cred = cred;
+            data.address = address;
             res.render('movie_info', {'data': data});
         });
     });
@@ -131,9 +117,9 @@ app.get('/play/:title', function (req, res) {
                             }
                         }
                         url = html.substring(start, stop - 1);
-                        url=url.replace("amp;","");
-                        url=url.replace("amp;","");
-                        url=url.replace("amp;","");
+                        url = url.replace("amp;", "");
+                        url = url.replace("amp;", "");
+                        url = url.replace("amp;", "");
                         console.log(url);
                         request(url, function (error, response, body) {
                             if (!error && response.statusCode == 200) {
@@ -148,7 +134,10 @@ app.get('/play/:title', function (req, res) {
                                         var decode = $('#mediaspace_wrapper').children().eq(6).children().eq(0).text();
                                         decode = get_utl(decode);
                                         var videourl = "https://openload.co/stream/" + decode + "?mime=true";
-                                        res.render('player', {'videourl': videourl});
+                                        var data = {};
+                                        data.videourl = videourl;
+                                        data.address = address;
+                                        res.render('player', {'data': data});
                                     } else res.send('err');
                                 });
                             } else res.send("err");
@@ -159,7 +148,6 @@ app.get('/play/:title', function (req, res) {
         } else res.send("err");
     })
 })
-
 
 
 // function tools
@@ -216,7 +204,6 @@ function get_utl(encode) {
     }
 
 }
-
 
 
 //start server on port 8888

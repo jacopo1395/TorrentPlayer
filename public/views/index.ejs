@@ -12,12 +12,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+
+    <script src="../js/index.js"></script>
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/navbar.css">
-    <link rel="stylesheet" href="../css/info.css">
+    <link rel="stylesheet" href="../css/index.css">
 
 
 </head>
+
 <body>
 
 <div class="navbar-wrapper">
@@ -36,14 +39,14 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="<%=data.address%>">Home</a></li>
-                        <li><a id="-3" href="<%=data.address%>">Film</a></li>
+                        <li class="active"><a href="<%=address%>">Home</a></li>
+                        <li><a id="-3" href="<%=address%>">Film</a></li>
                         <li><a id="-2" href="#serie">Serie</a></li>
                         <li class="dropdown">
                             <a id="-1" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">Genere <span class="caret"></span></a>
                             <ul class="dropdown-menu" id="genres">
-                                <li><a href="<%=data.address%>">Tutti</a></li>
+                                <li><a href="<%=address%>">Tutti</a></li>
                             </ul>
                         </li>
                         <li>
@@ -63,56 +66,14 @@
 </div>
 
 
-<div class="info-box">
-    <img class="info-image" width="300" height="441" src="http://image.tmdb.org/t/p/w342//<%= data.poster %>">
+<!-- general -->
 
+<div class="container box">
 
-    <div class="info">
-        <div>
-            <div class="info-title align"><%= data.title %></div>
-            <div class="rate align">
-                <div class="vote align"><%= data.rate %></div>
-                /10
-            </div>
-        </div>
-        <div>
-            <div class="year align"><%= data.year %></div>
-            <div class="genres align">
-                <% data.genres.forEach(function(i) { %>
-                - <%= i.name %>
-                <% }); %>
-                -
-            </div>
-        </div>
-        <h2 class="plot">
-            <%= data.plot %>
-        </h2>
-
-       <a href="<%=data.address%>/play/<%= data.title%>"  >
-        <button type="button" class="btn btn-primary btn-lg">
-            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Play
-        </button>
-       </a>
-    </div>
-
-    <div class="credits green-color">
-        <div class="director">
-            Regia:
-            <% data.cred.crew.forEach(function(e) { %>
-                <%if (e.job == 'Director') { %>
-                     <%= e.name %> -
-                <% } %>
-            <% }); %>
-        </div>
-        <div class="cast green-color">
-            Cast:
-            <% for(var i =0 ; i<5 ; i++) { %>
-            <%= data.cred.cast[i].name %>  -
-            <% } %>
-        </div>
-    </div>
 
 </div>
+
+<!-- //general -->
 
 
 </body>
