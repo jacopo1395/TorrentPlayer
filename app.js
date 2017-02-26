@@ -132,7 +132,9 @@ app.get('/play/:title', function (req, res) {
                                     if (!error && response.statusCode == 200) {
                                         $ = cheerio.load(body);
                                         var decode = $('#mediaspace_wrapper').children().eq(6).children().eq(0).text();
-                                        decode = get_utl(decode);
+                                        console.log(decode);
+                                        decode = get_url(decode);
+                                        console.log(decode)
                                         var videourl = "https://openload.co/stream/" + decode + "?mime=true";
                                         var data = {};
                                         data.videourl = videourl;
@@ -149,6 +151,20 @@ app.get('/play/:title', function (req, res) {
     })
 })
 
+app.get('/play1/:title', function(req, res){
+  console.log("/play")
+  var s = (req.params.title).replace("", "-");
+  var cineblog = "http://www.cb01.uno/";
+  var url = cineblog + s;
+  request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log(body)
+        var $ = cheerio.load(body);
+        $('.post_content').children().eq(4).children()
+        res.send(body)
+      }else res.send(error);
+    });
+})
 
 // function tools
 function clearify(url) {
@@ -180,31 +196,66 @@ function clearify(url) {
         return buf.toString('utf8');
     }
 }
+//
+// function get_url_old(encode) {
+//     try {
+//         first_two_chars = parseInt(parseFloat(encode[0] + encode[1]))
+//
+//         tab_code = {}
+//         index = 2
+//         while (index < (encode.length)) {
+//             key = parseInt(parseFloat(encode[index + 3] + encode[index + 3 + 1]))
+//             tab_code[key] = String.fromCharCode(parseInt(parseFloat(encode[index] + encode[index + 1] + encode[index + 2])) - first_two_chars)
+//             index += 5
+//         }
+//         console.log(tab_code)
+//         //sorted(tab_code, key)
+//         var text_decode = '';
+//         for (var key in tab_code) {
+//             if (tab_code.hasOwnProperty(key))
+//                 text_decode = text_decode + tab_code[key]
+//         }
+//         return text_decode;
+//     } catch (e) {
+//
+//     }
+//
+// }
 
-function get_utl(encode) {
-    try {
-        first_two_chars = parseInt(parseFloat(encode[0] + encode[1]))
+// encode="7k5405Q3168O1063g5275I1075D5555F6708Z3159d3159f6318h2266X7441n3267l2148i7644C4344V7448A1117j5630m4512R1056b1060S3165H3363E6684M7392U7399c1060L6798B2114Y6342N4236W4532J6726T1063o4436e3165p7819P6378G6444K5460"
+// console.log(get_url(encode))
+function get_url(encode){
+  text_decode = {}
+  v1 = parseInt(encode[0])
+  index = 1
+  while (index < (encode.length)){
+      i = (encode[index]).charCodeAt(0)
 
-        tab_code = {}
-        index = 2
-        while (index < (encode.length)) {
-            key = parseInt(parseFloat(encode[index + 3] + encode[index + 3 + 1]))
-            tab_code[key] = String.fromCharCode(parseInt(parseFloat(encode[index] + encode[index + 1] + encode[index + 2])) - first_two_chars)
-            index += 5
+      key = 0
+      if (i <= 90){
+          key = i - 65
+      }
+      else {
+        if (i >= 97){
+          key = 25 + i - 97
         }
-        //sorted(tab_code, key)
-        var text_decode = '';
-        for (var key in tab_code) {
-            if (tab_code.hasOwnProperty(key))
-                text_decode = text_decode + tab_code[key]
-        }
-        return text_decode;
-    } catch (e) {
+      }
+      // console.log(String.fromCharCode(parseInt(encode[index+2]+encode[index+3]+encode[index+4])))
+      text_decode[key] = String.fromCharCode(Math.floor( parseInt(encode[index+2]+encode[index+3]+encode[index+4]) / parseInt(encode[index+1]) ) - v1 )
+      index += 5
+  }
 
-    }
+  //sorted(text_decode, key=lambda key: text_decode[key])
+  // console.log(text_decode)
+  suffix = ""
+  for (key in text_decode){
+    // console.log(key+" = "+ text_decode[key])
+    if (text_decode.hasOwnProperty(key))
+      suffix += text_decode[key]
+  }
+  return suffix;
 
 }
-
 
 //start server on port 8888
 console.log('listein on 8888');
