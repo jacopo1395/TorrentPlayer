@@ -3,8 +3,8 @@
  */
 var movies = [];
 var page = 1;
-var address = "http://localhost:8888";
-// var address = "http://jacopo.westeurope.cloudapp.azure.com:8888";
+//var address = "http://localhost:8888";
+ var address = "http://jacopo.westeurope.cloudapp.azure.com:8888";
 
 $.getJSON(address+"/movies/" + page, function (data) {
     var items = [];

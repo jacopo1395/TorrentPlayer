@@ -9,8 +9,8 @@ var cheerio = require('cheerio');
 var api_key = '89b43c0850f63d51b9a2fde38e6db2f6';
 const mdb = require('moviedb')(api_key);
 var altadefinizione = "http://altadefinizione.cafe/";
-// var address = "http://jacopo.westeurope.cloudapp.azure.com:8888";
-var address = "http://localhost:8888";
+var address = "http://jacopo.westeurope.cloudapp.azure.com:8888";
+// var address = "http://localhost:8888";
 
 //views
 var index = fs.readFileSync('./public/views/index.html', "utf8");
