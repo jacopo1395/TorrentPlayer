@@ -4,11 +4,14 @@ var path = require('path');
 var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
+var cloudscraper = require('cloudscraper');
+let uu = require('url-unshort')();
 
 //variables
 var api_key = '89b43c0850f63d51b9a2fde38e6db2f6';
 const mdb = require('moviedb')(api_key);
-var altadefinizione = "http://altadefinizione.cafe/";
+var altadefinizione = "http://altadefinizione.bid/";
+var filmhd = "http://filmhd.me/";
 // var address = "http://jacopo.westeurope.cloudapp.azure.com:8888";
 var address = "http://localhost:8888";
 
@@ -84,9 +87,11 @@ app.get('/genres', function (req, res) {
     });
 });
 
-app.get('/play/:title', function (req, res) {
+app.get('/play1/:title', function (req, res) {
+  console.log("/play");
     var s = (req.params.title).replace("", "+");
     var url = altadefinizione + "?s=" + s;
+    console.log(url);
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var $ = cheerio.load(body);
@@ -140,30 +145,76 @@ app.get('/play/:title', function (req, res) {
                                         data.videourl = videourl;
                                         data.address = address;
                                         res.render('player', {'data': data});
-                                    } else res.send('err');
+                                    } else res.send('err 4');
                                 });
-                            } else res.send("err");
+                            } else res.send("err 3");
                         });
-                    } else res.send("err");
+                    } else res.send("err 2");
                 });
             });
-        } else res.send("err");
+        } else res.send("err 1");
     })
 })
 
-app.get('/play1/:title', function(req, res){
+app.get('/play/:title', function(req, res){
   console.log("/play")
-  var s = (req.params.title).replace("", "-");
-  var cineblog = "http://www.cb01.uno/";
-  var url = cineblog + s;
-  request(url, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        console.log(body)
-        var $ = cheerio.load(body);
-        $('.post_content').children().eq(4).children()
-        res.send(body)
-      }else res.send(error);
-    });
+  if(req.params.title == "undefined"){
+    console.log("notitle");
+    return;
+  }
+  var s = (req.params.title).replace(" ", "+");
+  var url = filmhd + "?s=" + s;
+  console.log(url);
+  cloudscraper.get(url, function(error, response, body) {
+    if (error) {
+      console.log('Error occurred');
+      res.send("err");
+    } else {
+      console.log("ok");
+      var $ = cheerio.load(body);
+      url = $('.item-inner').children("a").attr("href");
+      console.log(url);
+      cloudscraper.get(url, function(error, response, body){
+        if(!error && response.statusCode == 200){
+          var $ = cheerio.load(body);
+          url = $(".download").eq(5).children("a").attr("href");
+          console.log("qui: "+ url);
+          uu.expand(url, function(err, url){
+            if (err) {
+              console.log(err);
+              return;
+            }
+            console.log(url);
+            request(url, function(error, response, body){
+              if(error || response.statusCode!=200){
+                console.log("err3");
+                res.send(response.statusCode);
+                return;
+              }
+              $ = cheerio.load(body);
+              console.log(response.statusCode);
+
+              var decode = $('#mediaspace_wrapper').children().eq(5).children().eq(0).text();
+              console.log(decode);
+              decode = get_url(decode);
+              console.log(decode)
+              // var decode = $('#streamurl').text();
+              var videourl = "https://openload.co/stream/" + decode + "?mime=true";
+              var data = {};
+              data.videourl = videourl;
+              data.address = address;
+              res.render('player', {'data': data});
+              });
+            });
+        }
+        else {
+          console.log("err1");
+          res.send("err1");
+        }
+      });
+    }
+  });
+
 })
 
 // function tools
