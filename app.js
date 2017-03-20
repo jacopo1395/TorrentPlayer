@@ -37,31 +37,39 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ------------------APIs-------------------------
 
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
     console.log('/');
-    res.render('index', {'address': address});
+    res.render('index', {
+        'address': address
+    });
 });
 
 
 //GET /index/:page?g=genere return info movies
-app.get('/movies/:page', function (req, res) {
+app.get('/movies/:page', function(req, res) {
     console.log('/movies');
     var opt = {
-        language: 'it-IT', sort_by: 'popularity.desc',
-        include_adult: 'false', include_video: 'false',
-        page: req.params.page, year: '2016'
+        language: 'it-IT',
+        sort_by: 'popularity.desc',
+        include_adult: 'false',
+        include_video: 'false',
+        page: req.params.page,
+        year: '2016'
     };
     if (req.query.g != null) opt.with_genres = req.query.g;
-    mdb.discoverMovie(opt, function (err, data) {
+    mdb.discoverMovie(opt, function(err, data) {
         res.setHeader('Content-Type', 'application/json');
         res.json(data);
     });
 });
 
 //GET /info/:query Return
-app.get('/movie_info/:id', function (req, res) {
+app.get('/movie_info/:id', function(req, res) {
     console.log('/movie_info ' + req.params.id);
-    mdb.movieInfo({id: req.params.id, language: 'it-IT'}, function (err, info) {
+    mdb.movieInfo({
+        id: req.params.id,
+        language: 'it-IT'
+    }, function(err, info) {
         if (err) throw err;
         var data = {};
         data.title = info.title;
@@ -70,41 +78,48 @@ app.get('/movie_info/:id', function (req, res) {
         data.plot = info.overview;
         data.rate = info.vote_average;
         data.genres = info.genres;
-        mdb.movieCredits({id: req.params.id}, function (err, cred) {
+        mdb.movieCredits({
+            id: req.params.id
+        }, function(err, cred) {
             if (err) throw err;
             data.cred = cred;
             data.address = address;
-            res.render('movie_info', {'data': data});
+            res.render('movie_info', {
+                'data': data
+            });
         });
     });
 });
 
-app.get('/genres', function (req, res) {
-    mdb.genreMovieList({language: "it-IT"}, function (err, data) {
+app.get('/genres', function(req, res) {
+    mdb.genreMovieList({
+        language: "it-IT"
+    }, function(err, data) {
         if (err) throw err;
         res.setHeader('Content-Type', 'application/json');
         res.json(data);
     });
 });
 
-app.get('/play1/:title', function (req, res) {
-  console.log("/play");
+app.get('/play1/:title', function(req, res) {
+    console.log("/play");
     var s = (req.params.title).replace("", "+");
     var url = altadefinizione + "?s=" + s;
     console.log(url);
-    request(url, function (error, response, body) {
+    request(url, function(error, response, body) {
         if (!error && response.statusCode == 200) {
             var $ = cheerio.load(body);
             url = $(".col-lg-3.col-md-3.col-xs-3").children().eq(0).attr("href");
             console.log(url);
-            request(url, function (error, response, body) {
+            request(url, function(error, response, body) {
                 $ = cheerio.load(body);
                 url = $("#iframeVid").attr("src");
                 console.log(url);
-                request(url, function (error, response, body) {
+                request(url, function(error, response, body) {
                     if (!error && response.statusCode == 200) {
                         $ = cheerio.load(body);
-                        var regex = /http:\/\/hdpass\.net\/film\.php\?idFilm=.*">1080P/, indices = [];
+                        var regex = /http:\/\/hdpass\.net\/film\.php\?idFilm=.*">1080P/,
+                            indices = [];
                         var html = $('body').html().toString();
                         var re = "http://hdpass.net/film.php?idFilm=";
                         var idx = html.indexOf(re);
@@ -126,14 +141,14 @@ app.get('/play1/:title', function (req, res) {
                         url = url.replace("amp;", "");
                         url = url.replace("amp;", "");
                         console.log(url);
-                        request(url, function (error, response, body) {
+                        request(url, function(error, response, body) {
                             if (!error && response.statusCode == 200) {
                                 $ = cheerio.load(body);
                                 var urlEmbed = $('#urlEmbed').val();
                                 urlEmbed = clearify(urlEmbed);
                                 var iframe = '<iframe width="100%" height="100%" src="' + urlEmbed + '" frameborder="0" scrolling="no" allowfullscreen />';
                                 console.log(urlEmbed);
-                                request(urlEmbed, function (error, response, body) {
+                                request(urlEmbed, function(error, response, body) {
                                     if (!error && response.statusCode == 200) {
                                         $ = cheerio.load(body);
                                         var decode = $('#mediaspace_wrapper').children().eq(6).children().eq(0).text();
@@ -144,7 +159,9 @@ app.get('/play1/:title', function (req, res) {
                                         var data = {};
                                         data.videourl = videourl;
                                         data.address = address;
-                                        res.render('player', {'data': data});
+                                        res.render('player', {
+                                            'data': data
+                                        });
                                     } else res.send('err 4');
                                 });
                             } else res.send("err 3");
@@ -156,64 +173,65 @@ app.get('/play1/:title', function (req, res) {
     })
 })
 
-app.get('/play/:title', function(req, res){
-  console.log("/play")
-  if(req.params.title == "undefined"){
-    console.log("notitle");
-    return;
-  }
-  var s = (req.params.title).replace(" ", "+");
-  var url = filmhd + "?s=" + s;
-  console.log(url);
-  cloudscraper.get(url, function(error, response, body) {
-    if (error) {
-      console.log('Error occurred');
-      res.send("err");
-    } else {
-      console.log("ok");
-      var $ = cheerio.load(body);
-      url = $('.item-inner').children("a").attr("href");
-      console.log(url);
-      cloudscraper.get(url, function(error, response, body){
-        if(!error && response.statusCode == 200){
-          var $ = cheerio.load(body);
-          url = $(".download").eq(5).children("a").attr("href");
-          console.log("qui: "+ url);
-          uu.expand(url, function(err, url){
-            if (err) {
-              console.log(err);
-              return;
-            }
+app.get('/play/:title', function(req, res) {
+    console.log("/play")
+    if (req.params.title == "undefined") {
+        console.log("notitle");
+        return;
+    }
+    var s = (req.params.title).replace(" ", "+");
+    var url = filmhd + "?s=" + s;
+    console.log(url);
+    cloudscraper.get(url, function(error, response, body) {
+        if (error) {
+            console.log('Error occurred');
+            res.send("err");
+        } else {
+            console.log("ok");
+            var $ = cheerio.load(body);
+            url = $('.item-inner').children("a").attr("href");
             console.log(url);
-            request(url, function(error, response, body){
-              if(error || response.statusCode!=200){
-                console.log("err3");
-                res.send(response.statusCode);
-                return;
-              }
-              $ = cheerio.load(body);
-              console.log(response.statusCode);
+            cloudscraper.get(url, function(error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var $ = cheerio.load(body);
+                    url = $(".download").eq(5).children("a").attr("href");
+                    console.log("qui: " + url);
+                    uu.expand(url, function(err, url) {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        console.log(url);
+                        request(url, function(error, response, body) {
+                            if (error || response.statusCode != 200) {
+                                console.log("err3");
+                                res.send(response.statusCode);
+                                return;
+                            }
+                            $ = cheerio.load(body);
+                            console.log(response.statusCode);
 
-              var decode = $('#mediaspace_wrapper').children().eq(5).children().eq(0).text();
-              console.log(decode);
-              decode = get_url(decode);
-              console.log(decode)
-              // var decode = $('#streamurl').text();
-              var videourl = "https://openload.co/stream/" + decode + "?mime=true";
-              var data = {};
-              data.videourl = videourl;
-              data.address = address;
-              res.render('player', {'data': data});
-              });
+                            var decode = $('#mediaspace_wrapper').children().eq(5).children().eq(0).text();
+                            console.log(decode);
+                            decode = get_url(decode);
+                            console.log(decode)
+                            // var decode = $('#streamurl').text();
+                            var videourl = "https://openload.co/stream/" + decode + "?mime=true";
+                            var data = {};
+                            data.videourl = videourl;
+                            data.address = address;
+                            res.render('player', {
+                                'data': data
+                            });
+                        });
+                    });
+                } else {
+                    console.log("err1");
+                    res.send("err1");
+                }
             });
         }
-        else {
-          console.log("err1");
-          res.send("err1");
-        }
-      });
-    }
-  });
+    });
 
 })
 
@@ -275,36 +293,35 @@ function clearify(url) {
 
 // encode="7k5405Q3168O1063g5275I1075D5555F6708Z3159d3159f6318h2266X7441n3267l2148i7644C4344V7448A1117j5630m4512R1056b1060S3165H3363E6684M7392U7399c1060L6798B2114Y6342N4236W4532J6726T1063o4436e3165p7819P6378G6444K5460"
 // console.log(get_url(encode))
-function get_url(encode){
-  text_decode = {}
-  v1 = parseInt(encode[0])
-  index = 1
-  while (index < (encode.length)){
-      i = (encode[index]).charCodeAt(0)
+function get_url(encode) {
+    text_decode = {}
+    v1 = parseInt(encode[0])
+    index = 1
+    while (index < (encode.length)) {
+        i = (encode[index]).charCodeAt(0)
 
-      key = 0
-      if (i <= 90){
-          key = i - 65
-      }
-      else {
-        if (i >= 97){
-          key = 25 + i - 97
+        key = 0
+        if (i <= 90) {
+            key = i - 65
+        } else {
+            if (i >= 97) {
+                key = 25 + i - 97
+            }
         }
-      }
-      // console.log(String.fromCharCode(parseInt(encode[index+2]+encode[index+3]+encode[index+4])))
-      text_decode[key] = String.fromCharCode(Math.floor( parseInt(encode[index+2]+encode[index+3]+encode[index+4]) / parseInt(encode[index+1]) ) - v1 )
-      index += 5
-  }
+        // console.log(String.fromCharCode(parseInt(encode[index+2]+encode[index+3]+encode[index+4])))
+        text_decode[key] = String.fromCharCode(Math.floor(parseInt(encode[index + 2] + encode[index + 3] + encode[index + 4]) / parseInt(encode[index + 1])) - v1)
+        index += 5
+    }
 
-  //sorted(text_decode, key=lambda key: text_decode[key])
-  // console.log(text_decode)
-  suffix = ""
-  for (key in text_decode){
-    // console.log(key+" = "+ text_decode[key])
-    if (text_decode.hasOwnProperty(key))
-      suffix += text_decode[key]
-  }
-  return suffix;
+    //sorted(text_decode, key=lambda key: text_decode[key])
+    // console.log(text_decode)
+    suffix = ""
+    for (key in text_decode) {
+        // console.log(key+" = "+ text_decode[key])
+        if (text_decode.hasOwnProperty(key))
+            suffix += text_decode[key]
+    }
+    return suffix;
 
 }
 
